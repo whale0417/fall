@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arrtbackend
+  namespace: arrt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: arrtbackend
+  template:
+    metadata:
+      labels:
+        app: arrtbackend
+    spec:
+      containers:
+      - name: arrtbackend
+        image: ghcr.io/caerulean-ai/arrtbackend:955acf6
+        ports:
+        - containerPort: 8088
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-password
+              key: DATABASE_URL
+      imagePullSecrets:
+      - name: ghcr-io-secret-backend

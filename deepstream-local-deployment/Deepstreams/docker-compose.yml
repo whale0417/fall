@@ -1,0 +1,57 @@
+#version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq/config:/etc/rabbitmq
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+
+  deepstream:
+    image: nvcr.io/nvidia/deepstream:7.0-triton-multiarch
+    container_name: deepstream
+    runtime: nvidia
+    privileged: true
+    environment:
+      - DISPLAY=$DISPLAY
+      - CUDA_CACHE_DISABLE=0
+    devices:
+      - /dev/snd
+    ports:
+      - "8554:8554"
+      - "9933:9933"
+    volumes:
+      - /tmp/.X11-unix/:/tmp/.X11-unix
+      - /home:/home
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+    command: [ "tail", "-f", "/dev/null" ]
+
+  mediamtx:
+    image: bluenviron/mediamtx
+    container_name: mediamtx
+    ports:
+      - "8888:8888"
+      - "8889:8889"
+      - "8000:8000"
+      - "1935:1935"
+      - "554:554"
+    volumes:
+      - ./mediamtx/config/mediamtx.yml:/mediamtx.yml
+      - ./mediamtx/data:/mediaMTX/data
+
+volumes:
+  rabbitmq_data:
+
+

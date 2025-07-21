@@ -1,0 +1,9 @@
+[message-broker]
+hostname = localhost
+port = 5672
+username = admin
+password = admin
+#exchange = amq.topic
+exchange = deepstreamNew
+topic = vision
+#share-connection = 1

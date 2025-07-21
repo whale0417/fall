@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arrtfrontend
+  namespace: arrt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: arrtfrontend
+  template:
+    metadata:
+      labels:
+        app: arrtfrontend
+    spec:
+      containers:
+        - name: arrtfrontend
+          image: ghcr.io/caerulean-ai/arrtfrontend:9252a5b
+          ports:
+            - containerPort: 3000
+      imagePullSecrets:
+        - name: ghcr-io-secret-frontend

@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deepstream-demo-config
+data:
+  source2_1080p_dec_infer-resnet_demux_int8.txt: |
+    [application]
+    enable-perf-measurement=1
+    perf-measurement-interval-sec=5
+
+    [source0]
+    enable=1
+    type=3
+    uri=file:///opt/nvidia/deepstream/deepstream-7.0/samples/streams/sample_1080p_h264.mp4
+    num-sources=1
+    gpu-id=0
+    cudadec-memtype=0
+
+    [sink0]
+    enable=1
+    type=3
+    container=1
+    codec=1
+    enc-type=0
+    sync=1
+    bitrate=2000000
+    profile=0
+    output-file=out_source0.mp4
+    source-id=0
+
+    [osd]
+    enable=1
+    gpu-id=0
+    border-width=1
+    text-size=15
+    text-color=1;1;1;1;
+    text-bg-color=0.3;0.3;0.3;1
+    font=Serif
+    show-clock=0
+    clock-x-offset=800
+    clock-y-offset=820
+    clock-text-size=12
+    clock-color=1;0;0;0
+    nvbuf-memory-type=0
+
+    [streammux]
+    gpu-id=0
+    live-source=0
+    batch-size=2
+    batched-push-timeout=33000
+    width=1920
+    height=1080
+    enable-padding=0
+    nvbuf-memory-type=0
+
+    [primary-gie]
+    enable=1
+    gpu-id=0
+    model-engine-file=/opt/nvidia/deepstream/deepstream-7.0/samples/models/Primary_Detector/resnet18_trafficcamnet.etlt_b2_gpu0_int8.engine
+    batch-size=2
+    bbox-border-color0=1;0;0;1
+    bbox-border-color1=0;1;1;1
+    bbox-border-color2=0;0;1;1
+    bbox-border-color3=0;1;0;1
+    interval=0
+    gie-unique-id=1
+    nvbuf-memory-type=0
+    config-file=config_infer_primary.txt
+
+    [tests]
+    file-loop=0

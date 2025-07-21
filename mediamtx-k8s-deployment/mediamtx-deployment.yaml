@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mediamtx
+  namespace: arrt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mediamtx
+  template:
+    metadata:
+      labels:
+        app: mediamtx
+    spec:
+      containers:
+      - name: mediamtx
+        image: bluenviron/mediamtx
+        ports:
+        - containerPort: 8554 # RTSP Port
+        - containerPort: 8888 # HTTP API
+        volumeMounts:
+        - name: config
+          mountPath: /mediamtx.yml
+          subPath: mediamtx.yml
+      volumes:
+      - name: config
+        configMap:
+          name: mediamtx-config
+
+---
+#service for this deployment
+apiVersion: v1
+kind: Service
+metadata: 
+  name: mediamtx
+  namespace: arrt
+spec:
+  selector:
+    app: mediamtx
+  ports:
+    - protocol: TCP
+      port: 8554
+      targetPort: 8554
+      name: rtsp
+    - protocol: TCP
+      port: 8888
+      targetPort: 8888
+      name: http-api

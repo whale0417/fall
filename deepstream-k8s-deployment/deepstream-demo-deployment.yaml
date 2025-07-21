@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deepstream-demo
+  namespace: arrt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deepstream-demo
+  template:
+    metadata:
+      labels:
+        app: deepstream-demo
+    spec:
+      containers:
+        - name: deepstream
+          image: nvcr.io/nvidia/deepstream:7.0-triton-multiarch
+          #image: localhost:5000/deepstreamcustomimage
+          #image: ghcr.io/caerulean-ai/arrt-deepstream-image:latest
+          imagePullPolicy: Never
+          command: ["/bin/sh", "-c"]
+          args:
+            - "deepstream-app -c /home/user/deployments/arrt-infrastructure/deepstream-deployment/test_config.txt"
+            #- "deepstream-app -c /opt/deepstream/configs/test_config.txt" 
+           
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+          ports:
+            - containerPort: 8554
+          volumeMounts:
+            - name: deepstream-demo-config-volume
+              #mountPath: /opt/nvidia/deepstream/deepstream-7.0/samples/configs/deepstream-app
+              mountPath: /home/user/deployments/arrt-infrastructure/deepstream-deployment
+          env:
+            - name: RTSP_OUTPUT_URI
+              value: "rtsp://mediamtx.arrt:8554/stream"
+            - name: RABBITMQ_HOST
+              value: "rabbitmq.messaging"
+            - name: RABBITMQ_PORT
+              value: "5672"
+      volumes:
+        - name: deepstream-demo-config-volume
+          hostPath:
+            path: /home/user/deployments/arrt-infrastructure/deepstream-deployment
+      restartPolicy: Always

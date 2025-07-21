@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: arrt
+  namespace: argocd
+spec:
+  description: Project for managing the arrt applications
+  sourceRepos:
+    - 'git@github.com:Caerulean-ai/arrt-infrastructure.git'
+  destinations:
+    - namespace: arrt
+      server: 'https://kubernetes.default.svc'
+  clusterResourceWhitelist:
+    - group: ""
+      kind: PersistentVolume
+    - group: "storage.k8s.io"
+      kind: StorageClass
